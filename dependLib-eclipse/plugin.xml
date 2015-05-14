@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="com.code1024.dependlib.DependLibContainerInitializer"
+            id="com.code1024.dependlib.DEPENDLIB_CONF">
+      </classpathContainerInitializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.code1024.dependlib.DependLibPreferencePage"
+            id="com.code1024.dependlib.page1"
+            name="DependLib">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.code1024.dependlib.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.ui.classpathContainerPage">
+      <classpathContainerPage
+            class="com.code1024.dependlib.DependLibConfPage"
+            id="com.code1024.dependlib.DEPENDLIB_CONF"
+            name="DependLib Conf">
+      </classpathContainerPage>
+   </extension>
+   <extension
+         point="org.eclipse.ant.core.antProperties">
+      <antProperty
+            class="com.code1024.dependlib.AntProperty"
+            name="dependlib">
+      </antProperty>
+   </extension>
+</plugin>
