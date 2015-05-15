@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="hia" default="usage" basedir=".">
+	<description>build.xml</description>
+	
+	<!-- 载入属性文件 -->
+	<property file="build.properties"/>
+	<property environment="env"/>
+	<tstamp>
+		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss"/>
+	</tstamp>
+	
+	<!-- 定义输出文件 -->
+	<tstamp/>
+	<property name="log" value="deploy.${DSTAMP}.log" />
+	<property name="war.file.name" value="${ant.project.name}_${DSTAMP}.war" />
+	<property name="src.file.name" value="${ant.project.name}-src_${DSTAMP}.zip" />
+	<property name="jar.file.name" value="${ant.project.name}_${DSTAMP}.jar" />
+
+	
+	<property name="web.dir" value="WebRoot"/>
+	<property name="src.dir" value="src"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="bin.dir" value="${web.dir}/WEB-INF/classes"/>
+	<property name="lib.dir" value="${web.dir}/WEB-INF/lib"/>
+
+	<property name="dependlib.home" value="${env.DEPEND_LIB_HOME}" />
+	
+	<property name="jsp.jar" value="${TOMCAT_HOME}/lib/jsp-api.jar" />
+	<property name="servlet.jar" value="${TOMCAT_HOME}/lib/servlet-api.jar" />
+
+	<!-- 解析depend.conf 依赖配置文件 -->
+	<loadfile property="libnames" srcfile="depend.conf">
+		  <filterchain>
+		    <replaceregex byline="true" pattern="(\S+)[ ]?>.+" replace="\1,"/>
+		  	<striplinebreaks/>
+		  </filterchain>
+	</loadfile>
+	<fileset id="libs" dir="${dependlib.home}" includes="${libnames}"></fileset>
+	
+	<path id="compile.class.path">
+		<fileset refid="libs"></fileset>
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement location="${jsp.jar}" />
+		<pathelement location="${servlet.jar}" />
+	</path>
+
+	<!-- 定义时间 -->
+	<target name="setTime">
+		<tstamp/>
+			<!--<format property="TODAY" pattern="yyyy-MM-dd" />-->
+	</target>
+	
+	<!-- 资源配置文件文件定义 -->
+	<patternset id="resource.files">
+		<include name="**/*.xml" />
+		<include name="**/*.xsl" />
+		<include name="**/*.hbm" />
+		<include name="**/*.mapping" />
+		<include name="**/*.properties"/>
+		<include name="**/*.sql"/>
+		<exclude name="**/.svn/*"/>
+		<exclude name="**/_svn/*"/>
+	</patternset>
+
+	<patternset id="web.resource.files">
+		<include name="/resources/www/**" />
+		<exclude name="**/.svn/*"/>
+		<exclude name="**/_svn/*"/>
+	</patternset>
+
+	<!-- 定义输出信息 -->
+	<target name="usage" description="show this list">
+		<echo message="release: compile and generates war, zip the source" />
+		<echo message="init : initializing" />
+		<echo message="clean : clear all the resources and directories to generated" />
+		<echo message="compile : compiles all the source" />
+		<echo message="war : generates the war used with distributes" />
+		<echo message="zip : zip the source" />
+	</target>
+
+	<!-- 初始化,建立目录 -->
+	<target name="init">
+		<mkdir dir="${bin.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+
+	<!-- 清除所有生成内容 -->
+	<target name="clean">
+		<delete dir="${dist.dir}" />
+		<delete dir="${bin.dir}" />
+	</target>
+
+	<!-- 用于在eclipse环境的编译 -->
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" encoding="utf-8" classpathref="compile.class.path" includeantruntime="on" debug="on" destdir="${bin.dir}" />
+		<copy todir="${bin.dir}">
+			<fileset dir="${src.dir}">
+			    <patternset refid="resource.files"/>
+				<patternset refid="web.resource.files"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- 生成发布的 war -->
+	<target name="war" depends="compile">
+		<war destfile="${dist.dir}/${war.file.name}"  webxml="${web.dir}/WEB-INF/web.xml">
+			<fileset dir="${web.dir}"></fileset>
+			<mappedresources>
+		      <fileset dir="${dependlib.home}" includes="${libnames}"/>
+				<mapper>
+				    <chainedmapper>
+				    	<flattenmapper/>
+	                    <globmapper from="*" to="lib/*"/>
+					</chainedmapper>
+				</mapper>
+		    </mappedresources>
+		</war>
+	</target>
+
+	<!-- 生成源文件的zip,带了使用的 library -->
+	<target name="zip" depends="init">
+		<zip zipfile="${dist.dir}/${src.file.name}" >
+			<fileset dir="${basedir}" includes="${src.dir}/**, ${web.dir}/**" excludes="**/classes/**" />
+			<fileset dir="${basedir}" includes="*.properties, *.xml">
+			</fileset>
+		</zip>
+	</target>
+	
+	<target name="zip-nolib" depends="init">
+			<zip zipfile="${dist.dir}/nolib-${src.file.name}" >
+				<fileset dir="${basedir}" includes="${src.dir}/**, ${web.dir}/**" excludes="**/classes/**,${web.dir}/WEB-INF/lib/**" />
+				<fileset dir="${basedir}" includes="*.properties, *.xml">
+				</fileset>
+			</zip>
+		</target>
+	
+	<target name="jar" depends="compile">
+        <jar jarfile="${dist.dir}/${jar.file.name}" >
+            <fileset dir="${bin.dir}" includes="cn/com/higinet/ems/**, resources/**" excludes="**/Index.class,Test.class"/>
+        </jar>
+    </target>
+
+	<target name="release">
+		<antcall target="war" />
+		<antcall target="zip" />
+	</target>
+	
+	
+</project>
+
