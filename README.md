@@ -122,3 +122,10 @@ compile部分要引用classpath，然后就可以正常打jar包了；
     </war>
 </target>
 ```
+
+###Mac下eclipse插件的特殊配置
+
+在Mac下得eclipse中ant脚本中无法获取系统的环境变量 DEPEND_LIB_HOME（配置在~/.bash_profile中）,需要在eclipse中设置一下。
+
+具体是在Preferences->Ant->Runtime->Properties中添加dependlib.home到Global properties中即可正确运行ant脚本打包。
+
