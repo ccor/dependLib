@@ -106,6 +106,7 @@ compile部分要引用classpath，然后就可以正常打jar包了；
 ###Web工程
 
 说一下war包的ant脚本，引入jar包路径一样，拷贝lib的时候需要转换下路径；
+
 ```xml
 <target name="war" depends="compile">
     <war destfile="${dist.dir}/${war.file.name}"  webxml="${web.dir}/WEB-INF/web.xml">

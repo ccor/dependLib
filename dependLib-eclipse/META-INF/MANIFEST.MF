@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.ant.core
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.code1024.dependlib.DependLibPlugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
