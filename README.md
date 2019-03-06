@@ -26,12 +26,12 @@
 ```
 librepos/
 ├─┬ lib/
-│ ├── common/ （开源三方库）
-│ ├─┬ spring/
-│ │ └─┬ spring-3.0.5/
-│ │   ├── log4j-1.2.15.jar
-│ │   └── log4j-1.2.17.jar
-│ └── private（团队私有库）
+│ ├─┬ common/ （开源三方库）
+│ │ └─┬ spring/
+│ │   └─┬ spring-3.0.5/
+│ │     ├── log4j-1.2.15.jar
+│ │     └── log4j-1.2.17.jar
+│ └── private/（团队私有库）
 └─┬ dpc/ （这里存放了拷贝lib的脚本）
   ├── depend.bat
   └── depend.sh
